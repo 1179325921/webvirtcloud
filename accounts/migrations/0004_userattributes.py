@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('max_instances', models.IntegerField(default=0)),
                 ('max_cpus', models.IntegerField(default=0)),
                 ('max_memory', models.IntegerField(default=0)),
-                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL,on_delete=models.CASCADE)),
             ],
         ),
     ]

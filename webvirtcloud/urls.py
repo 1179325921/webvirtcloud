@@ -17,3 +17,4 @@ urlpatterns = [
     url(r'^console/$', console, name='console'),
     # (r'^admin/', include(admin.site.urls)),
 ]
+

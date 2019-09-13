@@ -19,9 +19,10 @@ class wvmHostDetails(wvmConnect):
         all_mem = self.wvm.getInfo()[1] * 1048576
         freemem = self.wvm.getMemoryStats(-1, 0)
         if type(freemem) == dict:
-            free = (freemem.values()[0] +
-                    freemem.values()[2] +
-                    freemem.values()[3]) * 1024
+            free_list = list(freemem.values())
+            free = (free_list[0] +
+                    free_list[2] +
+                    free_list[3]) * 1024
             percent = (100 - ((free * 100) / all_mem))
             usage = (all_mem - free)
             mem_usage = {'total': all_mem, 'usage': usage, 'percent': percent}

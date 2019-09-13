@@ -2,7 +2,7 @@ import libvirt
 import threading
 import socket
 from vrtManager import util
-from rwlock import ReadWriteLock
+from .rwlock import ReadWriteLock
 from django.conf import settings
 from libvirt import libvirtError
 
@@ -227,7 +227,7 @@ class wvmConnection(object):
         return u'qemu+{type}://{user}@{host}/system'.format(type=type_str, user=self.login, host=self.host)
 
     def __repr__(self):
-        return '<wvmConnection {connection_str}>'.format(connection_str=unicode(self))
+        return '<wvmConnection {connection_str}>'.format(connection_str=str(self))
 
 
 class wvmConnectionManager(object):
@@ -272,9 +272,9 @@ class wvmConnectionManager(object):
         raises libvirtError if (re)connecting fails
         """
         # force all string values to unicode
-        host = unicode(host)
-        login = unicode(login)
-        passwd = unicode(passwd) if passwd is not None else None
+        host = str(host)
+        login = str(login)
+        passwd = str(passwd) if passwd is not None else None
 
         connection = self._search_connection(host, login, passwd, conn)
 

@@ -2,7 +2,7 @@ import time
 import json
 from django.utils import timezone
 from django.http import HttpResponse, HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from computes.models import Compute
@@ -174,6 +174,7 @@ def compute_graph(request, compute_id):
     :return:
     """
     compute = get_object_or_404(Compute, pk=compute_id)
+    current_time = '0:0:0'
     try:
         conn = wvmHostDetails(compute.hostname,
                               compute.login,
@@ -186,7 +187,6 @@ def compute_graph(request, compute_id):
     except libvirtError:
         cpu_usage = {'usage': 0}
         mem_usage = {'usage': 0}
-
     data = json.dumps({'cpudata': cpu_usage['usage'],
                        'memdata': mem_usage,
                        'timeline': current_time})

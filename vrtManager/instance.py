@@ -212,7 +212,7 @@ class wvmInstance(wvmConnect):
         """Get number of physical CPUs."""
         hostinfo = self.wvm.getInfo()
         pcpus = hostinfo[4] * hostinfo[5] * hostinfo[6] * hostinfo[7]
-        range_pcpus = xrange(1, int(pcpus + 1))
+        range_pcpus = range(1, int(pcpus + 1))
         return range_pcpus
 
     def get_net_device(self):
@@ -520,7 +520,7 @@ class wvmInstance(wvmConnect):
             time.sleep(1)
             cpu_use_now = self.instance.info()[4]
             diff_usage = cpu_use_now - cpu_use_ago
-            cpu_usage['cpu'] = 100 * diff_usage / (1 * nbcore * 10 ** 9L)
+            cpu_usage['cpu'] = 100 * diff_usage / (1 * nbcore * 10 ** 9)
         else:
             cpu_usage['cpu'] = 0
         return cpu_usage

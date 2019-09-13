@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from computes.models import Compute
 from create.models import Flavor
@@ -126,7 +126,7 @@ def create_instance(request, compute_id):
                                     volume['bus'] = 'virtio'
                                     volume_list.append(volume)
                                 except libvirtError as lib_err:
-                                    error_messages.append(lib_err.message)
+                                    error_messages.append(lib_err.args)
                         elif data['template']:
                             templ_path = conn.get_volume_path(data['template'])
                             dest_vol = conn.get_volume_path(data["name"] + ".img", data['storage'])

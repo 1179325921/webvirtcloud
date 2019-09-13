@@ -8,14 +8,14 @@ import string
 import random
 from bisect import insort
 from django.http import HttpResponse, HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from computes.models import Compute
 from instances.models import Instance
 from django.contrib.auth.models import User
-from accounts.models import UserInstance, UserSSHKey
+from accounts.models import UserInstance, UserSSHKey,UserAttributes
 from vrtManager.hostdetails import wvmHostDetails
 from vrtManager.instance import wvmInstance, wvmInstances
 from vrtManager.connection import connection_manager
@@ -129,17 +129,17 @@ def instance(request, compute_id, vname):
             return 0
         size_str = size_str.encode('ascii', 'ignore').upper().translate(None, " B")
         if 'K' == size_str[-1]:
-            return long(float(size_str[:-1])) << 10
+            return int(float(size_str[:-1])) << 10
         elif 'M' == size_str[-1]:
-            return long(float(size_str[:-1])) << 20
+            return int(float(size_str[:-1])) << 20
         elif 'G' == size_str[-1]:
-            return long(float(size_str[:-1])) << 30
+            return int(float(size_str[:-1])) << 30
         elif 'T' == size_str[-1]:
-            return long(float(size_str[:-1])) << 40
+            return int(float(size_str[:-1])) << 40
         elif 'P' == size_str[-1]:
-            return long(float(size_str[:-1])) << 50
+            return int(float(size_str[:-1])) << 50
         else:
-            return long(float(size_str))
+            return int(float(size_str))
 
     def get_clone_free_names(size=10):
         prefix = settings.CLONE_INSTANCE_DEFAULT_PREFIX
@@ -154,7 +154,7 @@ def instance(request, compute_id, vname):
         return free_names
 
     def check_user_quota(instance, cpu, memory, disk_size):
-        ua = request.user.userattributes
+        ua = UserAttributes.objects.filter(user_id=request.user.id)
         msg = ""
 
         if request.user.is_superuser:
@@ -837,8 +837,8 @@ def instance(request, compute_id, vname):
         conn.close()
 
     except libvirtError as lib_err:
-        error_messages.append(lib_err.message)
-        addlogmsg(request.user.username, vname, lib_err.message)
+        error_messages.append(lib_err.args)
+        addlogmsg(request.user.username, vname, lib_err.args)
 
     return render(request, 'instance.html', locals())
 
@@ -923,7 +923,7 @@ def get_host_instances(request, comp):
     status = connection_manager.host_is_up(comp.type, comp.hostname)
 
     if status is True:
-        conn = wvmHostDetails(comp, comp.login, comp.password, comp.type)
+        conn = wvmHostDetails(comp.hostname, comp.login, comp.password, comp.type)
         comp_node_info = conn.get_node_info()
         comp_mem = conn.get_memory_usage()
         comp_instances = conn.get_host_instances(True)

@@ -20,13 +20,14 @@ django.setup()
 #     sys.path.append(VENV_PATH)
 
 import re
-import Cookie
+import http.cookies
 import socket
 from webvirtcloud.settings import WS_PORT, WS_HOST, WS_CERT
 from vrtManager.connection import CONN_SSH, CONN_SOCKET
-from tunnel import Tunnel
+from .tunnel import Tunnel
 
 from optparse import OptionParser
+
 parser = OptionParser()
 
 parser.add_option("-v",
@@ -66,7 +67,6 @@ parser.add_option("-c",
 
 (options, args) = parser.parse_args()
 
-
 FORMAT = "%(asctime)s - %(name)s - %(levelname)s : %(message)s"
 if options.debug:
     logging.basicConfig(level=logging.DEBUG, format=FORMAT)
@@ -78,6 +78,7 @@ else:
 
 try:
     from websockify import WebSocketProxy
+
     try:
         from websockify import ProxyRequestHandler
     except ImportError:
@@ -120,7 +121,7 @@ def get_connection_infos(token):
         console_host = conn.get_console_listen_addr()
         console_port = conn.get_console_port()
         console_socket = conn.get_console_socket()
-    except Exception, e:
+    except Exception as e:
         logging.error('Fail to retrieve console connection infos for token %s : %s' % (token, e))
         raise
     return (connhost, connport, connuser, conntype, console_host,
@@ -129,7 +130,7 @@ def get_connection_infos(token):
 
 class CompatibilityMixIn(object):
     def _new_client(self, daemon, socket_factory):
-        cookie = Cookie.SimpleCookie()
+        cookie = http.cookies.SimpleCookie()
         cookie.load(self.headers.getheader('cookie'))
         if 'token' not in cookie:
             self.msg('No token cookie found !')
@@ -167,7 +168,7 @@ class CompatibilityMixIn(object):
                 error_msg = "Try to open tunnel on %s@%s:%s on console %s:%s "
                 error_msg += "(or socket %s)"
                 self.msg(error_msg % (connuser, connhost, connport,
-                         console_host, console_port, console_socket))
+                                      console_host, console_port, console_socket))
                 tunnel = Tunnel()
                 fd = tunnel.open(connhost, connuser, connport,
                                  console_host, console_port, console_socket)

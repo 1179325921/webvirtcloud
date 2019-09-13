@@ -199,10 +199,10 @@ class wvmCreate(wvmConnect):
                   <on_crash>restart</on_crash>
                   <devices>"""
 
-        vd_disk_letters = list(string.lowercase)
-        fd_disk_letters = list(string.lowercase)
-        hd_disk_letters = list(string.lowercase)
-        sd_disk_letters = list(string.lowercase)
+        vd_disk_letters = list(string.ascii_lowercase)
+        fd_disk_letters = list(string.ascii_lowercase)
+        hd_disk_letters = list(string.ascii_lowercase)
+        sd_disk_letters = list(string.ascii_lowercase)
         add_cd = True
         #for image, img_type in images.items():
         for volume in images:
